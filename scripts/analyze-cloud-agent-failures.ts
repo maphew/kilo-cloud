@@ -301,14 +301,6 @@ async function main(): Promise<void> {
     poolConfig: { max: 1, connectionTimeoutMillis: 10_000 },
   });
 
-  const filterClause = responsibilityArg === 'all' ? '' : 'AND r.failure_responsibility = $1';
-  const params: string[] = [];
-  if (responsibilityArg !== 'all') params.push(responsibilityArg);
-  if (codeFilter) {
-    params.push(codeFilter);
-    if (responsibilityArg === 'all') params[0] = codeFilter;
-  }
-
   try {
     const summary = await pool.query<SummaryRow>(
       `SELECT
