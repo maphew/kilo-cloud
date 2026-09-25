@@ -28,6 +28,8 @@ let cursor: EventId | undefined = materialized ? undefined : filters.fromId;
 
 So on **every connect**, including every reconnect, the DO scans and re-sends one row per materialized message and part for the entire session, each with `eventId: 0`. The client parses and re-applies all of them (`packages/cloud-agent-sdk/src/cloud-agent-transport.ts:216-238`), recomputing the derived list per write. This is the "everything loads from scratch" behavior, and it scales with transcript size rather than delta.
 
+The repo's own tests encode this behavior: `stream.test.ts:943-997` asserts that `fromId=20` and `replay=false` both still reconcile every materialized update and removal. Bounding them requires `startTime`/`endTime`, which `buildConditions` applies to the materialized passes too (`session/queries/events.ts:117-119`).
+
 An `id`-based cursor cannot fix this on its own, because entity rows keep a stable `id` across updates:
 
 ```ts
