@@ -7,6 +7,14 @@ import { ensureOrganizationAccess } from '@/routers/organizations/utils';
 import * as z from 'zod';
 import { desc, eq } from 'drizzle-orm';
 import { SLACK_USER_FEEDBACK_WEBHOOK_URL } from '@/lib/config.server';
+import { toIsoTimestamp } from '@/lib/feedback/feedback-history';
+
+const DEFAULT_FEEDBACK_HISTORY_LIMIT = 5;
+const MAX_FEEDBACK_HISTORY_LIMIT = 20;
+
+const ListCloudAgentFeedbackInputSchema = z.object({
+  limit: z.number().int().min(1).max(MAX_FEEDBACK_HISTORY_LIMIT).optional(),
+});
 
 const DEFAULT_FEEDBACK_HISTORY_LIMIT = 5;
 const MAX_FEEDBACK_HISTORY_LIMIT = 20;
